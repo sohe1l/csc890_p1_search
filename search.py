@@ -72,6 +72,35 @@ def tinyMazeSearch(problem):
     w = Directions.WEST
     return  [s, s, w, s, w, w, s, w]
 
+def commonGraphSearch(problem, nodes):
+    
+    visited = {problem.getStartState()} #set()
+
+    successors = problem.getSuccessors(problem.getStartState())
+    for s in successors:
+        nodes.push((s[0], [s[1]]))
+
+    while(not nodes.isEmpty()):
+        nextState, nextPath = nodes.pop()
+        if nextState in visited:
+            continue
+        visited.add(nextState)
+
+        if(problem.isGoalState(nextState)):
+            return nextPath
+            break
+
+        successors = problem.getSuccessors(nextState)
+        for s in successors:
+
+            newPath = nextPath[:]
+            newPath.append(s[1])
+
+            nodes.push((s[0], newPath))
+
+    return None
+
+
 def depthFirstSearch(problem):
     """
     Search the deepest nodes in the search tree first.
@@ -88,37 +117,13 @@ def depthFirstSearch(problem):
     """
 
     # takes a tuple (state, [west, ...])
-    stack = util.Stack()
-    visited = set()
-
-    successors = problem.getSuccessors(problem.getStartState())
-    for s in successors:
-        stack.push((s[0], [s[1]]))
-
-
-    while(not stack.isEmpty()):
-        nextState, nextPath = stack.pop()
-        if nextState in visited:
-            continue
-        visited.add(nextState)
-
-        if(problem.isGoalState(nextState)):
-            break
-
-        successors = problem.getSuccessors(nextState)
-        for s in successors:
-
-            newPath = nextPath[:]
-            newPath.append(s[1])
-
-            stack.push((s[0], newPath))
-        
-    return nextPath
+    #stack = util.Stack()
+       
+    return commonGraphSearch(problem, util.Stack())
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    return commonGraphSearch(problem, util.Queue())
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
