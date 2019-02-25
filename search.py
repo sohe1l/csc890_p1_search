@@ -74,7 +74,9 @@ def tinyMazeSearch(problem):
 
 def commonGraphSearch(problem, nodes):
     
-    visited = {problem.getStartState()} #set()
+    visited = set();
+
+    visited.add(problem.getStartState())
 
     successors = problem.getSuccessors(problem.getStartState())
     for s in successors:
@@ -98,6 +100,7 @@ def commonGraphSearch(problem, nodes):
 
             nodes.push((s[0], newPath))
 
+    print("returning noneeeeeeee")
     return None
 
 

@@ -287,22 +287,29 @@ class CornersProblem(search.SearchProblem):
         self._expanded = 0 # DO NOT CHANGE; Number of search nodes expanded
         # Please add any code here which you would like to use
         # in initializing the problem
-        "*** YOUR CODE HERE ***"
+        # "*** YOUR CODE HERE ***"
+
+
 
     def getStartState(self):
         """
         Returns the start state (in your state space, not the full Pacman state
         space)
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # none of the corners are visited
+        visited = (False, False, False, False)
+        for i in range(4):
+          if(self.startingPosition  == self.corners[i]):
+            visited = visited[:i] + (True,) + visited[i+1:]
+
+        return (self.startingPosition, visited)
 
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return state[1] == (True, True, True, True)
+
 
     def getSuccessors(self, state):
         """
@@ -324,10 +331,24 @@ class CornersProblem(search.SearchProblem):
             #   nextx, nexty = int(x + dx), int(y + dy)
             #   hitsWall = self.walls[nextx][nexty]
 
-            "*** YOUR CODE HERE ***"
+            x,y = state[0]
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            hitsWall = self.walls[nextx][nexty]
+
+            if not hitsWall:
+              visited = state[1]
+              for i in range(4):
+                if((nextx, nexty) == self.corners[i]):
+                  visited = state[1][:i] + (True,) + state[1][i+1:]
+                  break;
+
+              # print (visited)
+              successors.append((((nextx, nexty), visited), action, 1) )
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
+
 
     def getCostOfActions(self, actions):
         """
