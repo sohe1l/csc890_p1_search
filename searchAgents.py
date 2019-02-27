@@ -497,8 +497,54 @@ def foodHeuristic(state, problem):
     problem.heuristicInfo['wallCount']
     """
     position, foodGrid = state
-    "*** YOUR CODE HERE ***"
-    return 0
+    
+
+    # add the unvisited corners in a list
+    unvisited = foodGrid.asList()
+
+    # get distance of pacman to closest food
+    # get distance of closest food to each other minus biggest one
+
+    if(len(unvisited) == 0):
+        return 0
+
+    #distance of pacman to closest food
+    pacman_to_food = 0
+    shortest = 999999
+    for i in range(len(unvisited)):
+        cx, cy = unvisited[i]
+        manhattan = abs(position[0] - cx) + abs(position[1] - cy)
+        if(manhattan < shortest):
+            shortest = manhattan
+
+    pacman_to_food = shortest
+
+    total = 0
+    largest_food_distance  = 0
+    smallest_food_distance = 99999
+
+    for i in range(len(unvisited)):
+        min = 999999
+        found = False
+        pos = unvisited[i] 
+        for j in range(len(unvisited)):
+            if(i == j):
+                continue
+            cx, cy = unvisited[j]
+            manhattan = abs(pos[0] - cx) + abs(pos[1] - cy)
+            if(manhattan < min):
+                min = manhattan
+                found = True
+        if(found == True):
+            total += min
+            if(min < smallest_food_distance):
+                smallest_food_distance = min
+
+    total = pacman_to_food + total - smallest_food_distance
+    if(total < 0):
+        return pacman_to_food
+    return total 
+
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
@@ -528,8 +574,36 @@ class ClosestDotSearchAgent(SearchAgent):
         walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
 
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # BFS to find closest food
+        nodes = util.Queue()
+        visited = set();
+        visited.add(problem.getStartState())
+
+        successors = problem.getSuccessors(problem.getStartState())
+        for s in successors:
+            nodes.push((s[0], [s[1]]))
+
+        while(not nodes.isEmpty()):
+            nextState, nextPath = nodes.pop()
+            if nextState in visited:
+                continue
+            visited.add(nextState)
+
+            if(problem.isGoalState(nextState)):
+                return nextPath
+                break
+
+            successors = problem.getSuccessors(nextState)
+            for s in successors:
+
+                newPath = nextPath[:]
+                newPath.append(s[1])
+
+                nodes.push((s[0], newPath))
+
+
+
+        return None
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -564,8 +638,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         """
         x,y = state
 
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return (self.food[x][y])
 
 def mazeDistance(point1, point2, gameState):
     """
